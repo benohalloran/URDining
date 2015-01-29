@@ -1,11 +1,11 @@
 package io.ohalloran.urdining;
 
-import android.app.ExpandableListActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 
 
-public class HallReviews extends ExpandableListActivity {
+public class HallReviews extends ActionBarActivity {
 
     public static final String KEY_HALL = "dinning hall";
     public static final String DOUGLASS = "Douglass";
@@ -16,7 +16,10 @@ public class HallReviews extends ExpandableListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reviews);
-
+        Bundle extras = getIntent().getExtras();
+        if (extras.containsKey(KEY_HALL)) {
+            //do stuff!
+        }
     }
 
 

@@ -1,12 +1,14 @@
 package io.ohalloran.urdining;
 
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
-public class SplashActivity extends ActionBarActivity {
+public class SplashActivity extends ActionBarActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,5 +37,17 @@ public class SplashActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.dfo_button || id == R.id.douglass_button) {
+            String val = id == R.id.dfo_button ? HallReviews.DFO : HallReviews.DOUGLASS;
+            Intent intent = new Intent(this, HallReviews.class);
+            intent.putExtra(HallReviews.KEY_HALL, val);
+            startActivity(intent);
+        }
+
     }
 }
