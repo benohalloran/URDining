@@ -24,20 +24,20 @@
 
         <LinearLayout
             android:gravity="center"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:padding="0dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Danforth"
                 android:id="@+id/dfo_button"
-                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textAppearance="?android:attr/textAppearanceLarge"
                 android:onClick="onClick"
-                android:layout_below="@+id/douglass_button"
-                android:layout_centerHorizontal="true"/>
+                android:clickable="true"
+                android:gravity="center"/>
 
             <RatingBar
                 android:layout_width="wrap_content"
@@ -47,19 +47,24 @@
 
         <LinearLayout
             android:gravity="center"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Douglass"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:onClick="onClick"
+                android:clickable="true"
+                android:id="@+id/douglass_button"/>
+
+            <RatingBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Douglass"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:onClick="onClick"
-                android:id="@+id/douglass_button"
-                android:layout_below="@+id/imageView"
-                android:layout_centerHorizontal="true"/>
+                android:id="@+id/douglass_rating"/>
         </LinearLayout>
 
 

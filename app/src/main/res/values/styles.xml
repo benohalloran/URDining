@@ -5,6 +5,9 @@
         <!-- Customize your theme here.
         <item name="android:background">@color/navy</item>
         <item name="android:textColor">@color/yellow</item>-->
+        <item name="android:numStars">5</item>
+        <item name="android:max">5</item>
+        <item name="android:stepSize">.5</item>
     </style>
 
 </resources>
