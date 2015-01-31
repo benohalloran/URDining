@@ -7,20 +7,17 @@ public enum DiningHall {
     DANFORTH, DOUGLASS;
 
     public String titleCase() {
-        char[] raw = toString().toCharArray();
-        for (int i = 1; i < raw.length; i++)
-            raw[i] -= 'A';
-        return new String(raw);
+        String raw = toString();
+        String tail = raw.substring(1).toLowerCase();
+        return raw.charAt(0) + tail;
     }
 
     public int getIndex() {
-        switch (this) {
-            case DANFORTH:
-                return 0;
-            case DOUGLASS:
-                return 1;
-        }
-        throw new IllegalStateException(this + " is not not defined in getIndex");
+        DiningHall[] halls = values();
+        for (int i = 0; i < halls.length; i++)
+            if (this == halls[i])
+                return i;
+        return -1; //will never reach here
     }
 
     public static DiningHall getEnum(String s) {
