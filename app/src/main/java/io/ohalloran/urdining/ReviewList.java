@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import static io.ohalloran.urdining.ReviewActivity.DANFORTH_POS;
+import io.ohalloran.urdining.data.DiningHall;
 
 /**
  * Created by Ben on 1/29/2015.
@@ -19,13 +19,13 @@ public class ReviewList extends ListFragment {
 
 
     private View header;
-    private int which;
+    private DiningHall which;
     private Adapter listAdapter;
 
-    public static final ReviewList newInstance(int which) {
+    public static ReviewList newInstance(DiningHall which) {
         ReviewList rl = new ReviewList();
         Bundle bun = new Bundle();
-        bun.putInt(WHICH_KEY, which);
+        bun.putString(WHICH_KEY, which.toString());
         rl.setArguments(bun);
         return rl;
     }
@@ -33,14 +33,15 @@ public class ReviewList extends ListFragment {
     @Override
     public void setArguments(Bundle args) {
         super.setArguments(args);
-        which = getArguments().getInt(WHICH_KEY, -1);
+        which = DiningHall.getEnum(getArguments().getString(WHICH_KEY));
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View list_root = inflater.inflate(R.layout.fragment_review, null);
         header = new TextView(list_root.getContext());
-        ((TextView) header).setText(which == DANFORTH_POS ? "Danforth" : "Douglass");
+        if (which != null)
+            ((TextView) header).setText(which.titleCase());
         return list_root;
     }
 

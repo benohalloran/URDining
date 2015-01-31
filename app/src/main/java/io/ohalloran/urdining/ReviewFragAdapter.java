@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import java.util.List;
 
+import io.ohalloran.urdining.data.DiningHall;
+
 /**
  * Standard fragment adapter for the main page
  */
@@ -33,6 +35,6 @@ public class ReviewFragAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return position == 0 ? "Danforth" : "Douglass";
+        return DiningHall.values()[position].titleCase();
     }
 }
