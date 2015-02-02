@@ -9,7 +9,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.List;
+
+import io.ohalloran.urdining.data.DataUtils;
 import io.ohalloran.urdining.data.DiningHall;
+import io.ohalloran.urdining.data.Review;
 
 /**
  * Created by Ben on 1/29/2015.
@@ -53,24 +57,32 @@ public class ReviewList extends ListFragment {
 
     private class Adapter extends BaseAdapter {
 
+        List<Review> reviews = DataUtils.getReviews(which);
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+
         @Override
         public int getCount() {
-            return 0;
+            return reviews.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return null;
+            return reviews.get(position);
         }
 
         @Override
         public long getItemId(int position) {
-            return 0;
+            return getItem(position).hashCode();
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
+            View v = convertView;
+            if(convertView == null){
+                v = inflater.inflate(R.layout.review_layout, parent, false);
+            }
+
+            return v;
         }
     }
 }

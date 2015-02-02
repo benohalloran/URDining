@@ -2,7 +2,7 @@
  * deStress
  * Updated 4/28/14 by Ben O'Halloran
  ***************************/
-package io.ohalloran.urdining;
+package io.ohalloran.urdining.data;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

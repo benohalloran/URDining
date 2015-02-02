@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ohalloran.urdining.data.DiningHall;
+import io.ohalloran.urdining.data.ReviewFragAdapter;
 
 
 public class ReviewActivity extends ActionBarActivity {
