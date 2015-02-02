@@ -9,13 +9,15 @@ public class Review implements Comparable<Review> {
     private int votes;
     private int userId; //TODO may not need
     private DiningHall hall;
+    private String objectId;
 
-    public Review(String textReview, float startsReview, int votes, DiningHall hall, int userId) {
+    public Review(String textReview, float startsReview, int votes, DiningHall hall, int userId, String objectId) {
         this.textReview = textReview;
         this.startsReview = startsReview;
         this.votes = votes;
         this.hall = hall;
         this.userId = userId;
+        this.objectId = objectId;
     }
 
     public int getUserId() {
@@ -58,9 +60,18 @@ public class Review implements Comparable<Review> {
         this.hall = hall;
     }
 
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
     private Float score() {
         return startsReview;
     }
+
 
     @Override
     public int compareTo(Review another) {
