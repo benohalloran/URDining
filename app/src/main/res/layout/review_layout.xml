@@ -3,6 +3,7 @@
               android:orientation="horizontal"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:padding="15dp"
               android:weightSum="1">
 
     <LinearLayout
@@ -14,14 +15,20 @@
         <RatingBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/ratingBar"
+            android:id="@+id/rating_display"
+            android:clickable="false"
+            android:gravity="center"
+            android:rating="3"
+            android:maxHeight="30dp"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
             android:isIndicator="true"/>
 
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/textView"/>
+            android:text="Text Review"
+            android:id="@+id/text_review"/>
     </LinearLayout>
 
     <LinearLayout
@@ -31,28 +38,36 @@
         android:layout_weight=".8">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:text="New Text"
-            android:id="@+id/textView2"
+            android:text="▼"
+            android:onClick="onClick"
+            android:rotation="180"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:id="@+id/vote_up"
             android:layout_weight="1"
-            android:gravity="center_vertical"/>
+            android:gravity="center"
+            android:layout_gravity="center"/>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:text="New Text"
-            android:id="@+id/textView3"
+            android:text="1"
+            android:id="@+id/vote_display"
             android:layout_weight="1"
-            android:gravity="center_vertical"/>
+            android:gravity="center"
+            android:layout_gravity="center"/>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:text="New Text"
-            android:id="@+id/textView4"
+            android:text="▼"
+            android:id="@+id/vote_down"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:onClick="onClick"
             android:layout_weight="1"
-            android:gravity="center_vertical"/>
+            android:gravity="center"
+            android:layout_gravity="center"/>
     </LinearLayout>
 
 </LinearLayout>

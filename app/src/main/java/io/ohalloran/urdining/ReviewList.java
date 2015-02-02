@@ -3,10 +3,13 @@ package io.ohalloran.urdining;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -18,13 +21,13 @@ import io.ohalloran.urdining.data.Review;
 /**
  * Created by Ben on 1/29/2015.
  */
-public class ReviewList extends ListFragment {
+public class ReviewList extends ListFragment implements View.OnClickListener {
     private static final String WHICH_KEY = "hall";
 
 
-    private View header;
     private DiningHall which;
     private Adapter listAdapter;
+    private View footer; //hot/cold view
 
     public static ReviewList newInstance(DiningHall which) {
         ReviewList rl = new ReviewList();
@@ -43,9 +46,11 @@ public class ReviewList extends ListFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View list_root = inflater.inflate(R.layout.fragment_review, null);
-        header = new TextView(list_root.getContext());
-        if (which != null)
-            ((TextView) header).setText(which.titleCase());
+        footer = inflater.inflate(R.layout.recent_pop, null, false);
+        footer.findViewById(R.id.footer_recent).setOnClickListener(this);
+        footer.findViewById(R.id.footer_pop).setOnClickListener(this);
+        ListView lv = (ListView) list_root.findViewById(android.R.id.list);
+        lv.addFooterView(footer);
         return list_root;
     }
 
@@ -55,8 +60,12 @@ public class ReviewList extends ListFragment {
         getListView().setAdapter(listAdapter = new Adapter());
     }
 
-    private class Adapter extends BaseAdapter {
+    @Override
+    public void onClick(View view) {
+        Log.d("Review List", view.toString());
+    }
 
+    private class Adapter extends BaseAdapter {
         List<Review> reviews = DataUtils.getReviews(which);
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
@@ -66,7 +75,7 @@ public class ReviewList extends ListFragment {
         }
 
         @Override
-        public Object getItem(int position) {
+        public Review getItem(int position) {
             return reviews.get(position);
         }
 
@@ -77,12 +86,21 @@ public class ReviewList extends ListFragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View v = convertView;
-            if(convertView == null){
-                v = inflater.inflate(R.layout.review_layout, parent, false);
+            View root = convertView;
+            if (convertView == null) {
+                root = inflater.inflate(R.layout.review_layout, parent, false);
             }
+            TextView textReview = (TextView) root.findViewById(R.id.text_review);
+            RatingBar ratingBar = (RatingBar) root.findViewById(R.id.rating_display);
+            TextView scoreDisplay = (TextView) root.findViewById(R.id.vote_display);
 
-            return v;
+            Review data = getItem(position);
+
+            textReview.setText(data.getTextReview());
+            ratingBar.setRating(data.getStartsReview());
+            scoreDisplay.setText(data.getVotes() + "");
+            return root;
         }
+
     }
 }
