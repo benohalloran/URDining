@@ -2,8 +2,11 @@ package io.ohalloran.urdining.data;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import android.content.Context;
+import android.widget.BaseAdapter;
+
 import com.parse.*;
 import io.ohalloran.urdining.R;
 
@@ -12,30 +15,75 @@ import io.ohalloran.urdining.R;
  */
 public class DataUtils {
 
-    private static List<ParseObject> reviews;
-    private static List<ParseObject> scores;
+    private static List<Review> danforthRecent = new ArrayList<>();
+    private static List<Review> danforthPopular = new ArrayList<>();
+    private static List<Review> douglassRecent = new ArrayList<>();
+    private static List<Review> douglassPopular = new ArrayList<>();
+
+    private static List<BaseAdapter> dataChangeListener = new ArrayList<>();
 
     public static void initialize(Context c) {
         Parse.initialize(c, c.getString(R.string.app_id), c.getString(R.string.client_key));
+        refreshReviews();
+    }
+
+    public static void addBaseAdapter(BaseAdapter baseAdapter) {
+        dataChangeListener.add(baseAdapter);
     }
 
     private static void refreshScores() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Scores");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> scoreList, ParseException e) {
-                scores = scoreList;
+                //scores = scoreList;
             }
         });
     }
 
-    private static void refreshReviews(String order) {
+    public static void refreshReviews() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Reviews");
-        query.orderByDescending(order);
+        query.orderByDescending("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> reviewList, ParseException e) {
-                reviews = reviewList;
+                if (reviewList.isEmpty()) {
+                    return;
+                }
+                List<Review> danforth = new ArrayList<>();
+                List<Review> douglass = new ArrayList<>();
+                for (ParseObject parseRev : reviewList) {
+                    DiningHall hall = DiningHall.getEnum(parseRev.getString("diningHall"));
+                    Review rev = createReview(parseRev, hall);
+                    if (DiningHall.DANFORTH == hall) {
+                        danforth.add(rev);
+                    } else {
+                        douglass.add(rev);
+                    }
+                }
+                List<Review> danforthPop = new ArrayList<>(danforth.size());
+                danforthPop.addAll(danforth);
+
+                List<Review> douglassPop = new ArrayList<>(douglass.size());
+                douglassPop.addAll(douglass);
+
+                Comparator<Review> reviewComparator = new Comparator<Review>() {
+                    @Override
+                    public int compare(Review lhs, Review rhs) {
+                        return lhs.getVotes() - rhs.getVotes();
+                    }
+                };
+                Collections.sort(danforthPop, reviewComparator);
+                Collections.sort(douglassPop, reviewComparator);
+
+                danforthRecent = danforth;
+                danforthPopular = danforthPop;
+                douglassRecent = douglass;
+                douglassPopular = douglassPop;
             }
         });
+
+        for (BaseAdapter baseAdapter : dataChangeListener) {
+            baseAdapter.notifyDataSetChanged();
+        }
     }
 
     private static Review createReview(ParseObject parseRev, DiningHall hall) {
@@ -49,22 +97,20 @@ public class DataUtils {
 
     //Get the reviews for <hall> in most recent order
     public static List<Review> getReviews(DiningHall hall) {
-        refreshReviews("createdAt");
-        List<Review> reviewList = new ArrayList<Review>();
-        for (ParseObject parseRev : reviews) {
-            reviewList.add(createReview(parseRev, hall));
+        if (hall == DiningHall.DANFORTH) {
+            return danforthRecent;
+        } else {
+            return douglassRecent;
         }
-        return reviewList;
     }
 
     //Return reviews highest score first
     public static List<Review> getReviewsHot(DiningHall hall) {
-        refreshReviews("score");
-        List<Review> reviewList = new ArrayList<Review>();
-        for (ParseObject parseRev : reviews) {
-            reviewList.add(createReview(parseRev, hall));
+        if (hall == DiningHall.DANFORTH) {
+            return danforthPopular;
+        } else {
+            return douglassPopular;
         }
-        return reviewList;
     }
 
     //Submits a review to the cloud
@@ -147,7 +193,7 @@ public class DataUtils {
         });
     }
 
-    public static List<ParseObject> getScores() {
+    /*public static List<ParseObject> getScores() {
         return scores;
-    }
+    }*/
 }

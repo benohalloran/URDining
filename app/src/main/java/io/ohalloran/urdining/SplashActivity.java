@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import io.ohalloran.urdining.data.*;
 
 import io.ohalloran.urdining.data.DiningHall;
 
@@ -14,6 +15,7 @@ public class SplashActivity extends ActionBarActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        DataUtils.initialize(this);
     }
 
     @Override
