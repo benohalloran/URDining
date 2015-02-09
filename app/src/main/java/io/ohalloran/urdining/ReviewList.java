@@ -58,6 +58,7 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getListView().setAdapter(listAdapter = new Adapter());
+        DataUtils.addBaseAdapter(listAdapter);
     }
 
     @Override
@@ -66,8 +67,9 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
     }
 
     private class Adapter extends BaseAdapter {
+        final LayoutInflater inflater = LayoutInflater.from(getActivity());
+
         List<Review> reviews = DataUtils.getReviews(which);
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         @Override
         public int getCount() {
@@ -102,5 +104,10 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
             return root;
         }
 
+        @Override
+        public void notifyDataSetChanged() {
+            reviews = DataUtils.getReviews(which);
+            super.notifyDataSetChanged();
+        }
     }
 }
