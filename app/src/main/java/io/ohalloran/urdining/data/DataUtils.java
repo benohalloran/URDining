@@ -1,13 +1,20 @@
 package io.ohalloran.urdining.data;
 
+import android.content.Context;
+import android.widget.BaseAdapter;
+
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import android.content.Context;
-import android.widget.BaseAdapter;
 
-import com.parse.*;
 import io.ohalloran.urdining.R;
 
 /**
@@ -68,7 +75,7 @@ public class DataUtils {
                 Comparator<Review> reviewComparator = new Comparator<Review>() {
                     @Override
                     public int compare(Review lhs, Review rhs) {
-                        return lhs.getVotes() - rhs.getVotes();
+                        return rhs.getVotes() - lhs.getVotes();
                     }
                 };
                 Collections.sort(danforthPop, reviewComparator);
@@ -133,14 +140,15 @@ public class DataUtils {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Scores");
         query.whereEqualTo("userId", userId);
         try {
-            List<ParseObject> scoreList= query.find();
+            List<ParseObject> scoreList = query.find();
             if (scoreList.isEmpty()) {
                 ParseObject newEntry = new ParseObject("Scores");
                 newEntry.put("userId", userId);
                 newEntry.put("score", 0);
                 newEntry.saveInBackground();
             }
-        } catch (ParseException e) {}
+        } catch (ParseException e) {
+        }
     }
 
     public static void upVote(Review review) {

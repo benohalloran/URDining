@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -27,7 +26,8 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
 
     private DiningHall which;
     private Adapter listAdapter;
-    private View footer; //hot/cold view
+    private View footer;
+    private View recent, pop;
 
     public static ReviewList newInstance(DiningHall which) {
         ReviewList rl = new ReviewList();
@@ -45,13 +45,15 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View list_root = inflater.inflate(R.layout.fragment_review, null);
-        footer = inflater.inflate(R.layout.recent_pop, null, false);
-        footer.findViewById(R.id.footer_recent).setOnClickListener(this);
-        footer.findViewById(R.id.footer_pop).setOnClickListener(this);
-        ListView lv = (ListView) list_root.findViewById(android.R.id.list);
-        lv.addFooterView(footer);
-        return list_root;
+        View root = inflater.inflate(R.layout.fragment_review, null);
+
+        footer = root.findViewById(R.id.include);
+        recent = footer.findViewById(R.id.footer_recent);
+        pop = footer.findViewById(R.id.footer_pop);
+
+        recent.setOnClickListener(this);
+        pop.setOnClickListener(this);
+        return root;
     }
 
     @Override
@@ -63,13 +65,46 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        Log.d("Review List", view.toString());
+        Log.d("Click", view.toString());
+        switch (view.getId()) {
+            case R.id.footer_pop:
+                listAdapter.updateMode(Mode.POPULAR);
+                break;
+            case R.id.footer_recent:
+                listAdapter.updateMode(Mode.RECENT);
+                break;
+        }
+    }
+
+    static enum Mode {
+        RECENT, POPULAR
     }
 
     private class Adapter extends BaseAdapter {
         final LayoutInflater inflater = LayoutInflater.from(getActivity());
 
+        Mode mode = Mode.RECENT;
         List<Review> reviews = DataUtils.getReviews(which);
+
+
+        public void updateMode(Mode m) {
+            if (mode == m)
+                return;
+            mode = m;
+            fetchReviews();
+            notifyDataSetChanged();
+        }
+
+        void fetchReviews() {
+            switch (mode) {
+                case RECENT:
+                    reviews = DataUtils.getReviews(which);
+                    break;
+                case POPULAR:
+                    reviews = DataUtils.getReviewsHot(which);
+                    break;
+            }
+        }
 
         @Override
         public int getCount() {
@@ -87,7 +122,7 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             View root = convertView;
             if (convertView == null) {
                 root = inflater.inflate(R.layout.review_layout, parent, false);
@@ -96,18 +131,36 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
             RatingBar ratingBar = (RatingBar) root.findViewById(R.id.rating_display);
             TextView scoreDisplay = (TextView) root.findViewById(R.id.vote_display);
 
-            Review data = getItem(position);
+            final Review data = getItem(position);
 
             textReview.setText(data.getTextReview());
             ratingBar.setRating(data.getStartsReview());
             scoreDisplay.setText(data.getVotes() + "");
+
+            View.OnClickListener listener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switch (v.getId()) {
+                        case R.id.vote_up:
+                            DataUtils.upVote(data);
+                            break;
+                        case R.id.vote_down:
+                            DataUtils.downVote(data);
+                    }
+                }
+            };
+
+            //up-down votes
+            root.findViewById(R.id.vote_up).setOnClickListener(listener);
+            root.findViewById(R.id.vote_down).setOnClickListener(listener);
             return root;
         }
 
         @Override
         public void notifyDataSetChanged() {
-            reviews = DataUtils.getReviews(which);
+            fetchReviews();
             super.notifyDataSetChanged();
         }
+
     }
 }

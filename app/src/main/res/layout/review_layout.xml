@@ -41,7 +41,6 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:text="▼"
-            android:onClick="onClick"
             android:rotation="180"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:id="@+id/vote_up"
@@ -52,7 +51,7 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:text="1"
+            android:text="0"
             android:id="@+id/vote_display"
             android:layout_weight="1"
             android:gravity="center"
@@ -64,7 +63,6 @@
             android:text="▼"
             android:id="@+id/vote_down"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:onClick="onClick"
             android:layout_weight="1"
             android:gravity="center"
             android:layout_gravity="center"/>
