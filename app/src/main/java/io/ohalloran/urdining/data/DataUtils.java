@@ -1,6 +1,7 @@
 package io.ohalloran.urdining.data;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.BaseAdapter;
 
 import com.parse.FindCallback;
@@ -21,6 +22,7 @@ import io.ohalloran.urdining.R;
  * Created by Ben on 1/31/2015.
  */
 public class DataUtils {
+    private static final String TAG = "Data Utils";
 
     private static List<Review> danforthRecent = new ArrayList<>();
     private static List<Review> danforthPopular = new ArrayList<>();
@@ -148,6 +150,7 @@ public class DataUtils {
                 newEntry.saveInBackground();
             }
         } catch (ParseException e) {
+            Log.e(TAG, "Error submitting review", e);
         }
     }
 
@@ -200,8 +203,4 @@ public class DataUtils {
             }
         });
     }
-
-    /*public static List<ParseObject> getScores() {
-        return scores;
-    }*/
 }
