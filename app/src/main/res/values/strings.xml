@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">UR Dining</string>
-    <string name="title_activity_write">Post Review</string>
+    <string name="title_activity_write">Write Review</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 

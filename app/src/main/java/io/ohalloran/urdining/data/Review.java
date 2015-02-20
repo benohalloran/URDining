@@ -20,6 +20,15 @@ public class Review implements Comparable<Review> {
         this.objectId = objectId;
     }
 
+    public Review(String textReview, float startsReview, int votes, DiningHall hall, int userId) {
+        this.textReview = textReview;
+        this.startsReview = startsReview;
+        this.votes = votes;
+        this.hall = hall;
+        this.userId = userId;
+        this.objectId = null;
+    }
+
     public int getUserId() {
         return userId;
     }
