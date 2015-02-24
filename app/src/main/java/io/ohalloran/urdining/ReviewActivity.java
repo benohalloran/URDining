@@ -2,6 +2,7 @@ package io.ohalloran.urdining;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -20,22 +21,41 @@ public class ReviewActivity extends ActionBarActivity {
 
     private ViewPager pager;
 
+    ReviewFragAdapter fragAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
         pager = (ViewPager) findViewById(R.id.list_pager);
-        //set up the fragments & pager
-        List<Fragment> frags = new ArrayList<>();
-        for (DiningHall hall : DiningHall.values())
-            frags.add(ReviewList.newInstance(hall));
 
-        pager.setAdapter(new ReviewFragAdapter(getSupportFragmentManager(), frags));
+        List<ReviewList> frags = new ArrayList<>();
+        if (savedInstanceState == null) {
+            //set up the fragments & pager
+            for (DiningHall hall : DiningHall.values())
+                frags.add(ReviewList.newInstance(hall));
+        } else {
+            //reload saved states
+            for (DiningHall hall : DiningHall.values()) {
+                Fragment f = getSupportFragmentManager().getFragment(savedInstanceState,
+                        hall.toString());
+                frags.add((ReviewList) f);
+            }
+        }
+        pager.setAdapter(fragAdapter = new ReviewFragAdapter(getSupportFragmentManager(), frags));
 
         //load the right frag
         Bundle args = getIntent().getExtras();
         DiningHall hallEnum = DiningHall.getEnum(args.getString(KEY));
         showFrag(hallEnum.getIndex());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        for (ReviewList f : fragAdapter) {
+            getSupportFragmentManager().putFragment(outState, f.which().toString(), f);
+        }
     }
 
     private void showFrag(int frag) {

@@ -4,21 +4,21 @@
  ***************************/
 package io.ohalloran.urdining.data;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import java.util.Iterator;
 import java.util.List;
 
-import io.ohalloran.urdining.data.DiningHall;
+import io.ohalloran.urdining.ReviewList;
 
 /**
  * Standard fragment adapter for the main page
  */
-public class ReviewFragAdapter extends FragmentPagerAdapter {
-    private List<Fragment> list;
+public class ReviewFragAdapter extends FragmentPagerAdapter implements Iterable<ReviewList> {
+    private List<ReviewList> list;
 
-    public ReviewFragAdapter(FragmentManager fm, List<Fragment> frags) {
+    public ReviewFragAdapter(FragmentManager fm, List<ReviewList> frags) {
         super(fm);
         list = frags;
     }
@@ -29,12 +29,17 @@ public class ReviewFragAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public Fragment getItem(int i) {
+    public ReviewList getItem(int i) {
         return list.get(i);
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
         return DiningHall.values()[position].titleCase();
+    }
+
+    @Override
+    public Iterator<ReviewList> iterator() {
+        return list.iterator();
     }
 }

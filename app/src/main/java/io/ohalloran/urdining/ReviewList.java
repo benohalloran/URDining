@@ -67,10 +67,18 @@ public class ReviewList extends ListFragment implements View.OnClickListener, Sw
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(WHICH_KEY, which.toString());
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getListView().setAdapter(listAdapter = new Adapter());
         DataUtils.addBaseAdapter(listAdapter);
+        if (which == null && savedInstanceState != null) {
+            which = DiningHall.valueOf(savedInstanceState.getString(WHICH_KEY));
+        }
     }
 
     @Override
@@ -84,6 +92,10 @@ public class ReviewList extends ListFragment implements View.OnClickListener, Sw
                 listAdapter.updateMode(Mode.RECENT);
                 break;
         }
+    }
+
+    public DiningHall which(){
+        return which;
     }
 
     @Override
