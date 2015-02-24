@@ -8,9 +8,9 @@ import android.widget.RatingBar;
 
 import java.util.List;
 
-import io.ohalloran.urdining.data.*;
-
+import io.ohalloran.urdining.data.DataUtils;
 import io.ohalloran.urdining.data.DiningHall;
+import io.ohalloran.urdining.data.Review;
 
 
 public class SplashActivity extends ActionBarActivity implements View.OnClickListener {

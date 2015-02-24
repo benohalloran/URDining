@@ -1,7 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light">
+    <style name="AppBase" parent="Theme.AppCompat.Light">
+
+    </style>
+
+    <!-- Not platform specific-->
+    <style name="AppTheme" parent="AppBase">
         <item name="android:numStars">5</item>
         <item name="android:max">5</item>
         <item name="android:stepSize">.5</item>
