@@ -3,6 +3,7 @@ package io.ohalloran.urdining;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +21,7 @@ import io.ohalloran.urdining.data.Review;
 /**
  * Created by Ben on 1/29/2015.
  */
-public class ReviewList extends ListFragment implements View.OnClickListener {
+public class ReviewList extends ListFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String WHICH_KEY = "hall";
 
 
@@ -28,6 +29,7 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
     private Adapter listAdapter;
     private View footer;
     private View recent, pop;
+    private SwipeRefreshLayout refreshLayout;
 
     public static ReviewList newInstance(DiningHall which) {
         ReviewList rl = new ReviewList();
@@ -50,6 +52,13 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
         footer = root.findViewById(R.id.include);
         recent = footer.findViewById(R.id.footer_recent);
         pop = footer.findViewById(R.id.footer_pop);
+        refreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_container);
+
+        refreshLayout.setOnRefreshListener(this);
+        refreshLayout.setColorScheme(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
         recent.setOnClickListener(this);
         pop.setOnClickListener(this);
@@ -74,6 +83,18 @@ public class ReviewList extends ListFragment implements View.OnClickListener {
                 listAdapter.updateMode(Mode.RECENT);
                 break;
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        refreshLayout.setRefreshing(true);
+        DataUtils.refreshReviews(new DataUtils.OnRefreshCallback() {
+            @Override
+            public void onRefreshComplete() {
+                listAdapter.notifyDataSetChanged();
+                refreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     static enum Mode {
