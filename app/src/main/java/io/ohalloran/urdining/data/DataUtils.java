@@ -50,6 +50,10 @@ public class DataUtils {
     }
 
     public static void refreshReviews() {
+        refreshReviews(null);
+    }
+
+    public static void refreshReviews(final OnRefreshCallback callback) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Reviews");
         query.orderByDescending("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -87,12 +91,13 @@ public class DataUtils {
                 danforthPopular = danforthPop;
                 douglassRecent = douglass;
                 douglassPopular = douglassPop;
+                if (callback != null)
+                    callback.onRefreshComplete();
+                for (BaseAdapter baseAdapter : dataChangeListener) {
+                    baseAdapter.notifyDataSetChanged();
+                }
             }
         });
-
-        for (BaseAdapter baseAdapter : dataChangeListener) {
-            baseAdapter.notifyDataSetChanged();
-        }
     }
 
     private static Review createReview(ParseObject parseRev, DiningHall hall) {
@@ -202,5 +207,9 @@ public class DataUtils {
                 }
             }
         });
+    }
+
+    public static interface OnRefreshCallback {
+        void onRefreshComplete();
     }
 }
