@@ -15,10 +15,7 @@
         android:id="@+id/logo"
         android:src="@drawable/ur_logo"
         android:layout_weight="1"
-        android:scaleType="fitCenter"
-        android:layout_above="@+id/io_host"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"/>
+        android:scaleType="fitCenter"/>
 
     <LinearLayout
         android:gravity="center"
@@ -46,6 +43,7 @@
                 android:gravity="center"/>
 
             <RatingBar
+                android:isIndicator="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/dfo_ratting"/>
@@ -69,6 +67,7 @@
                 android:id="@+id/douglass_button"/>
 
             <RatingBar
+                android:isIndicator="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/douglass_rating"/>

@@ -6,6 +6,7 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -103,6 +104,13 @@ public class ReviewList extends ListFragment implements View.OnClickListener, Sw
 
     private class Adapter extends BaseAdapter {
         final LayoutInflater inflater = LayoutInflater.from(getActivity());
+        final View.OnTouchListener trueListener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        };
+
 
         Mode mode = Mode.RECENT;
         List<Review> reviews = DataUtils.getReviews(which);
@@ -157,6 +165,8 @@ public class ReviewList extends ListFragment implements View.OnClickListener, Sw
             textReview.setText(data.getTextReview());
             ratingBar.setRating(data.getStartsReview());
             scoreDisplay.setText(data.getVotes() + "");
+
+            ratingBar.setOnTouchListener(trueListener);
 
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
