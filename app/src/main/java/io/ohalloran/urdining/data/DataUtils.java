@@ -31,9 +31,9 @@ public class DataUtils {
 
     private static List<BaseAdapter> dataChangeListener = new ArrayList<>();
 
-    public static void initialize(Context c) {
+    public static void initialize(Context c, OnRefreshCallback callback) {
         Parse.initialize(c, c.getString(R.string.app_id), c.getString(R.string.client_key));
-        refreshReviews();
+        refreshReviews(callback);
     }
 
     public static void addBaseAdapter(BaseAdapter baseAdapter) {
@@ -91,11 +91,12 @@ public class DataUtils {
                 danforthPopular = danforthPop;
                 douglassRecent = douglass;
                 douglassPopular = douglassPop;
-                if (callback != null)
-                    callback.onRefreshComplete();
+
                 for (BaseAdapter baseAdapter : dataChangeListener) {
                     baseAdapter.notifyDataSetChanged();
                 }
+                if (callback != null)
+                    callback.onRefreshComplete();
             }
         });
     }

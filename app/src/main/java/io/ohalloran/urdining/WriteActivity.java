@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -25,12 +26,19 @@ public class WriteActivity extends ActionBarActivity {
     private RadioGroup hallRadio;
     private RatingBar starRatingBar;
 
+    private RadioButton danforthButton;
+    private RadioButton douglassButton;
+
+    public static final String FRAG_ID = "FRAG_ID";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_write);
         textReviewEditText = (EditText)findViewById(R.id.text_review);
         hallRadio = (RadioGroup)findViewById(R.id.hall);
+        danforthButton = (RadioButton)findViewById(R.id.Danforth);
+        douglassButton = (RadioButton)findViewById(R.id.Douglass);
         starRatingBar = (RatingBar)findViewById(R.id.rating);
         textReviewEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -42,6 +50,15 @@ public class WriteActivity extends ActionBarActivity {
                 return false;
             }
         });
+
+        if (getIntent().getIntExtra(FRAG_ID, 0) == 0) {
+            danforthButton.setChecked(true);
+            douglassButton.setChecked(false);
+        } else {
+            danforthButton.setChecked(false);
+            douglassButton.setChecked(true);
+        }
+
 
     }
 
@@ -56,7 +73,7 @@ public class WriteActivity extends ActionBarActivity {
         int userId = androidId.hashCode();
         Review review = new Review(textReview, startsReview, votes, hall, userId);
         DataUtils.sendReview(review);
-        onBackPressed();
+        finish();
     }
 
     @Override

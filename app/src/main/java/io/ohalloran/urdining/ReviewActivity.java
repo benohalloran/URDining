@@ -52,7 +52,9 @@ public class ReviewActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.write_review:
-                startActivity(new Intent(this, WriteActivity.class));
+                Intent intent = new Intent(this, WriteActivity.class);
+                intent.putExtra(WriteActivity.FRAG_ID, pager.getCurrentItem());
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
