@@ -1,11 +1,11 @@
 package io.ohalloran.urdining;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -16,7 +16,7 @@ import io.ohalloran.urdining.data.DiningHall;
 import io.ohalloran.urdining.data.ReviewFragAdapter;
 
 
-public class ReviewActivity extends ActionBarActivity {
+public class ReviewActivity extends Activity {
     public static final String KEY = "clicked";
 
     private ViewPager pager;
@@ -37,12 +37,12 @@ public class ReviewActivity extends ActionBarActivity {
         } else {
             //reload saved states
             for (DiningHall hall : DiningHall.values()) {
-                Fragment f = getSupportFragmentManager().getFragment(savedInstanceState,
+                Fragment f = getFragmentManager().getFragment(savedInstanceState,
                         hall.toString());
                 frags.add((ReviewList) f);
             }
         }
-        pager.setAdapter(fragAdapter = new ReviewFragAdapter(getSupportFragmentManager(), frags));
+        pager.setAdapter(fragAdapter = new ReviewFragAdapter(getFragmentManager(), frags));
 
         //load the right frag
         Bundle args = getIntent().getExtras();
@@ -54,7 +54,7 @@ public class ReviewActivity extends ActionBarActivity {
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
         for (ReviewList f : fragAdapter) {
-            getSupportFragmentManager().putFragment(outState, f.which().toString(), f);
+            getFragmentManager().putFragment(outState, f.which().toString(), f);
         }
     }
 

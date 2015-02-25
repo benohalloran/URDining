@@ -60,7 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/text_review"
-            android:layout_gravity="fill"/>
+            android:textColor="@color/black"/>
 
     </LinearLayout>
 
