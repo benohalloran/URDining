@@ -4,7 +4,6 @@ import android.app.ListFragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,14 +21,12 @@ import io.ohalloran.urdining.data.Review;
 /**
  * Created by Ben on 1/29/2015.
  */
-public class ReviewList extends ListFragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String WHICH_KEY = "hall";
 
 
     private DiningHall which;
     private Adapter listAdapter;
-    private View footer;
-    private View recent, pop;
     private SwipeRefreshLayout refreshLayout;
 
     public static ReviewList newInstance(DiningHall which) {
@@ -50,9 +47,6 @@ public class ReviewList extends ListFragment implements View.OnClickListener, Sw
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_review, null);
 
-        footer = root.findViewById(R.id.include);
-        recent = footer.findViewById(R.id.footer_recent);
-        pop = footer.findViewById(R.id.footer_pop);
         refreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_container);
 
         refreshLayout.setOnRefreshListener(this);
@@ -61,8 +55,6 @@ public class ReviewList extends ListFragment implements View.OnClickListener, Sw
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        recent.setOnClickListener(this);
-        pop.setOnClickListener(this);
         return root;
     }
 
@@ -81,18 +73,6 @@ public class ReviewList extends ListFragment implements View.OnClickListener, Sw
         }
     }
 
-    @Override
-    public void onClick(View view) {
-        Log.d("Click", view.toString());
-        switch (view.getId()) {
-            case R.id.footer_pop:
-                listAdapter.updateMode(Mode.POPULAR);
-                break;
-            case R.id.footer_recent:
-                listAdapter.updateMode(Mode.RECENT);
-                break;
-        }
-    }
 
     public DiningHall which() {
         return which;
@@ -110,7 +90,11 @@ public class ReviewList extends ListFragment implements View.OnClickListener, Sw
         });
     }
 
-    static enum Mode {
+    public void updateMode(Mode mode) {
+        listAdapter.updateMode(mode);
+    }
+
+    public static enum Mode {
         RECENT, POPULAR
     }
 

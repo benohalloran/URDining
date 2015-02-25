@@ -9,7 +9,6 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
-        android:layout_above="@+id/include"
         android:layout_height="match_parent">
 
         <ListView
@@ -21,19 +20,11 @@
             android:layout_above="@+id/include"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <include
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/recent_pop"
-        android:layout_alignParentBottom="true"
-        android:id="@+id/include"/>
-
     <TextView
         android:id="@id/android:empty"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="No data"
-        android:layout_above="@+id/include"/>
+        android:text="No data"/>
 
 </RelativeLayout>

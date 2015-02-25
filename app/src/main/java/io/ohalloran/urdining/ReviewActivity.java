@@ -8,6 +8,7 @@ import android.os.PersistableBundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,9 @@ import java.util.List;
 import io.ohalloran.urdining.data.DiningHall;
 import io.ohalloran.urdining.data.ReviewFragAdapter;
 
+import static io.ohalloran.urdining.ReviewList.Mode;
 
-public class ReviewActivity extends Activity {
+public class ReviewActivity extends Activity implements View.OnClickListener {
     public static final String KEY = "clicked";
 
     private ViewPager pager;
@@ -28,6 +30,9 @@ public class ReviewActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
         pager = (ViewPager) findViewById(R.id.list_pager);
+
+        findViewById(R.id.footer_pop).setOnClickListener(this);
+        findViewById(R.id.footer_recent).setOnClickListener(this);
 
         List<ReviewList> frags = new ArrayList<>();
         if (savedInstanceState == null) {
@@ -48,6 +53,19 @@ public class ReviewActivity extends Activity {
         Bundle args = getIntent().getExtras();
         DiningHall hallEnum = DiningHall.getEnum(args.getString(KEY));
         showFrag(hallEnum.getIndex());
+    }
+
+    @Override
+    public void onClick(View view) {
+        ReviewList frag = fragAdapter.getItem(pager.getCurrentItem());
+        switch (view.getId()) {
+            case R.id.footer_pop:
+                frag.updateMode(Mode.POPULAR);
+                break;
+            case R.id.footer_recent:
+                frag.updateMode(Mode.RECENT);
+                break;
+        }
     }
 
     @Override
