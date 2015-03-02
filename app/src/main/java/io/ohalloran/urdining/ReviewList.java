@@ -26,7 +26,6 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
 
 
     private DiningHall which;
-    private Adapter listAdapter;
     private SwipeRefreshLayout refreshLayout;
 
     public static ReviewList newInstance(DiningHall which) {
@@ -46,9 +45,7 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_review, null);
-
         refreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_container);
-
         refreshLayout.setOnRefreshListener(this);
         refreshLayout.setColorScheme(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -66,16 +63,21 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getListView().setAdapter(listAdapter = new Adapter());
-        DataUtils.addBaseAdapter(listAdapter);
+        ReviewAdapter ra = new ReviewAdapter();
+        setListAdapter(ra);
+        DataUtils.addBaseAdapter(ra);
         if (which == null && savedInstanceState != null) {
             which = DiningHall.valueOf(savedInstanceState.getString(WHICH_KEY));
         }
     }
 
-
     public DiningHall which() {
         return which;
+    }
+
+    @Override
+    public ReviewAdapter getListAdapter() {
+        return (ReviewAdapter) super.getListAdapter();
     }
 
     @Override
@@ -84,21 +86,21 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
         DataUtils.refreshReviews(new DataUtils.OnRefreshCallback() {
             @Override
             public void onRefreshComplete() {
-                listAdapter.notifyDataSetChanged();
+                getListAdapter().notifyDataSetChanged();
                 refreshLayout.setRefreshing(false);
             }
         });
     }
 
     public void updateMode(Mode mode) {
-        listAdapter.updateMode(mode);
+        getListAdapter().updateMode(mode);
     }
 
     public static enum Mode {
         RECENT, POPULAR
     }
 
-    private class Adapter extends BaseAdapter {
+    private class ReviewAdapter extends BaseAdapter {
         final LayoutInflater inflater = LayoutInflater.from(getActivity());
         final View.OnTouchListener trueListener = new View.OnTouchListener() {
             @Override
@@ -154,7 +156,7 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
             }
             TextView textReview = (TextView) root.findViewById(R.id.text_review);
             RatingBar ratingBar = (RatingBar) root.findViewById(R.id.rating_display);
-            TextView scoreDisplay = (TextView) root.findViewById(R.id.vote_display);
+            final TextView scoreDisplay = (TextView) root.findViewById(R.id.vote_display);
 
             final Review data = getItem(position);
 
@@ -167,12 +169,12 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    switch (v.getId()) {
-                        case R.id.vote_up:
-                            DataUtils.upVote(data);
-                            break;
-                        case R.id.vote_down:
-                            DataUtils.downVote(data);
+                    boolean update = v.getId() == R.id.vote_up ? DataUtils.upVote(data)
+                            : DataUtils.downVote(data);
+                    if (update) {
+                        scoreDisplay.setText(data.getVotes() + "");
+                        scoreDisplay.invalidate();
+                        notifyDataSetChanged();
                     }
                 }
             };

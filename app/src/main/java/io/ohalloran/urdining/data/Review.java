@@ -81,6 +81,19 @@ public class Review implements Comparable<Review> {
         return startsReview;
     }
 
+    @Override
+    public int hashCode() {
+        return objectId.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Review) {
+            Review r = (Review) o;
+            return r.objectId.equals(r.objectId);
+        }
+        return false;
+    }
 
     @Override
     public int compareTo(Review another) {
