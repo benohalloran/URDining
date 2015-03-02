@@ -1,6 +1,7 @@
 package io.ohalloran.urdining.data;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.BaseAdapter;
 
@@ -11,10 +12,18 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.ohalloran.urdining.R;
 
@@ -29,11 +38,46 @@ public class DataUtils {
     private static List<Review> douglassRecent = new ArrayList<>();
     private static List<Review> douglassPopular = new ArrayList<>();
 
+    private static final String fileName = "fileName.txt";
+    private static Map<String, Integer> reviewsVoted;
+
     private static List<BaseAdapter> dataChangeListener = new ArrayList<>();
 
     public static void initialize(Context c, OnRefreshCallback callback) {
         Parse.initialize(c, c.getString(R.string.app_id), c.getString(R.string.client_key));
         refreshReviews(callback);
+        new Thread() {
+            public void run() {
+                reviewsVoted = loadFileInBackground();
+            }
+        }.start();
+    }
+
+    public static Map<String, Integer> loadFileInBackground() {
+        File ex = Environment.getDataDirectory();
+        File file = new File(ex, fileName);
+
+        Map<String, Integer> reviewsVoted = new ConcurrentHashMap<>();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            String[] wordLine;
+            while ((line = br.readLine()) != null) {
+                wordLine = line.split("[,]");
+                reviewsVoted.put(wordLine[0], Integer.valueOf(wordLine[1]));
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            //Error.
+        }
+
+        return reviewsVoted;
+    }
+
+    public static void writeToFile() {
+
     }
 
     public static void addBaseAdapter(BaseAdapter baseAdapter) {
@@ -160,54 +204,89 @@ public class DataUtils {
         }
     }
 
-    public static void upVote(Review review) {
+    public static boolean upVote(Review review) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Reviews");
-        query.getInBackground(review.getObjectId(), new GetCallback<ParseObject>() {
-            public void done(ParseObject parseRev, ParseException e) {
-                if (e == null) {
-                    int newScore = parseRev.getInt("score") + 1;
-                    parseRev.put("score", newScore);
-                    parseRev.saveInBackground();
+        if (canUpVote(review)) {
+            query.getInBackground(review.getObjectId(), new GetCallback<ParseObject>() {
+                public void done(ParseObject parseRev, ParseException e) {
+                    if (e == null) {
+                        int newScore = parseRev.getInt("score") + 1;
+                        parseRev.put("score", newScore);
+                        parseRev.saveInBackground();
+                    }
                 }
-            }
-        });
+            });
 
-        ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Scores");
-        query2.whereEqualTo("userId", review.getUserId());
-        query2.getFirstInBackground(new GetCallback<ParseObject>() {
-            public void done(ParseObject parseRev, ParseException e) {
-                if (e == null) {
-                    int newScore = parseRev.getInt("score") + 1;
-                    parseRev.put("score", newScore);
-                    parseRev.saveInBackground();
+
+            ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Scores");
+            query2.whereEqualTo("userId", review.getUserId());
+            query2.getFirstInBackground(new GetCallback<ParseObject>() {
+                public void done(ParseObject parseRev, ParseException e) {
+                    if (e == null) {
+                        int newScore = parseRev.getInt("score") + 1;
+                        parseRev.put("score", newScore);
+                        parseRev.saveInBackground();
+                    }
                 }
-            }
-        });
+            });
+            return true;
+        }
+        return false;
     }
 
-    public static void downVote(Review review) {
+    public static boolean downVote(Review review) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Reviews");
-        query.getInBackground(review.getObjectId(), new GetCallback<ParseObject>() {
-            public void done(ParseObject parseRev, ParseException e) {
-                if (e == null) {
-                    int newScore = parseRev.getInt("score") - 1;
-                    parseRev.put("score", newScore);
-                    parseRev.saveInBackground();
+        if (canDownVote(review)) {
+            query.getInBackground(review.getObjectId(), new GetCallback<ParseObject>() {
+                public void done(ParseObject parseRev, ParseException e) {
+                    if (e == null) {
+                        int newScore = parseRev.getInt("score") - 1;
+                        parseRev.put("score", newScore);
+                        parseRev.saveInBackground();
+                    }
                 }
-            }
-        });
+            });
 
-        ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Scores");
-        query2.whereEqualTo("userId", review.getUserId());
-        query2.getFirstInBackground(new GetCallback<ParseObject>() {
-            public void done(ParseObject parseRev, ParseException e) {
-                if (e == null) {
-                    int newScore = parseRev.getInt("score") - 1;
-                    parseRev.put("score", newScore);
-                    parseRev.saveInBackground();
+            ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Scores");
+            query2.whereEqualTo("userId", review.getUserId());
+            query2.getFirstInBackground(new GetCallback<ParseObject>() {
+                public void done(ParseObject parseRev, ParseException e) {
+                    if (e == null) {
+                        int newScore = parseRev.getInt("score") - 1;
+                        parseRev.put("score", newScore);
+                        parseRev.saveInBackground();
+                    }
                 }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    public static void updateVoteMap(Review review, int vote) {
+        //reviewsVoted.put(review.getObjectId(), )
+    }
+
+    public static boolean canUpVote(Review review) {
+        if (reviewsVoted.containsKey(review.getObjectId())) {
+            int val = reviewsVoted.get(review.getObjectId());
+            if (val == -1 || val == 0) {
+                return true;
             }
-        });
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean canDownVote(Review review) {
+        if (reviewsVoted.containsKey(review.getObjectId())) {
+            int val = reviewsVoted.get(review.getObjectId());
+            if (val == 0 || val == 1) {
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 
     public static interface OnRefreshCallback {
