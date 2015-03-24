@@ -13,17 +13,18 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.ohalloran.urdining.R;
 
@@ -57,27 +58,48 @@ public class DataUtils {
         File ex = Environment.getDataDirectory();
         File file = new File(ex, fileName);
 
+
         Map<String, Integer> reviewsVoted = new ConcurrentHashMap<>();
 
         try {
+            if (!file.exists())
+                file.createNewFile();
+
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             String[] wordLine;
             while ((line = br.readLine()) != null) {
-                wordLine = line.split("[,]");
+                wordLine = line.split(",");
                 reviewsVoted.put(wordLine[0], Integer.valueOf(wordLine[1]));
             }
             br.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             //Error.
+            Log.e("DataUtils", "Error loading file", e);
         }
 
         return reviewsVoted;
     }
 
     public static void writeToFile() {
+        File ex = Environment.getDataDirectory();
+        File file = new File(ex, fileName);
 
+        try {
+            if (!file.exists())
+                file.createNewFile();
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            Set<Map.Entry<String, Integer>> set = reviewsVoted.entrySet();
+            
+            for (Map.Entry<String, Integer> entry : set) {
+                writer.write(entry.getKey() + " " + entry.getValue().toString());
+                writer.newLine();
+            }
+            writer.close();
+        } catch (IOException e) {
+            Log.e("DataUtils", "Error Writing file", e);
+        }
     }
 
     public static void addBaseAdapter(BaseAdapter baseAdapter) {
