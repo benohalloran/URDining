@@ -227,88 +227,55 @@ public class DataUtils {
     }
 
     public static boolean upVote(Review review) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Reviews");
-        if (canUpVote(review)) {
-            query.getInBackground(review.getObjectId(), new GetCallback<ParseObject>() {
-                public void done(ParseObject parseRev, ParseException e) {
-                    if (e == null) {
-                        int newScore = parseRev.getInt("score") + 1;
-                        parseRev.put("score", newScore);
-                        parseRev.saveInBackground();
-                    }
-                }
-            });
-
-
-            ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Scores");
-            query2.whereEqualTo("userId", review.getUserId());
-            query2.getFirstInBackground(new GetCallback<ParseObject>() {
-                public void done(ParseObject parseRev, ParseException e) {
-                    if (e == null) {
-                        int newScore = parseRev.getInt("score") + 1;
-                        parseRev.put("score", newScore);
-                        parseRev.saveInBackground();
-                    }
-                }
-            });
-            return true;
-        }
-        return false;
+        vote(review, 1);
+        return true;
     }
 
     public static boolean downVote(Review review) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Reviews");
-        if (canDownVote(review)) {
-            query.getInBackground(review.getObjectId(), new GetCallback<ParseObject>() {
-                public void done(ParseObject parseRev, ParseException e) {
-                    if (e == null) {
-                        int newScore = parseRev.getInt("score") - 1;
-                        parseRev.put("score", newScore);
-                        parseRev.saveInBackground();
-                    }
-                }
-            });
+        vote(review, -1);
+        return true;
+    }
 
-            ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Scores");
-            query2.whereEqualTo("userId", review.getUserId());
-            query2.getFirstInBackground(new GetCallback<ParseObject>() {
-                public void done(ParseObject parseRev, ParseException e) {
-                    if (e == null) {
-                        int newScore = parseRev.getInt("score") - 1;
-                        parseRev.put("score", newScore);
-                        parseRev.saveInBackground();
-                    }
+    private static void vote(Review review, int method) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Reviews");
+        final int val = voteLogic(review, method);
+        query.getInBackground(review.getObjectId(), new GetCallback<ParseObject>() {
+            public void done(ParseObject parseRev, ParseException e) {
+                if (e == null) {
+                    int newScore = parseRev.getInt("score") + val;
+                    parseRev.put("score", newScore);
+                    parseRev.saveInBackground();
                 }
-            });
-            return true;
-        }
-        return false;
+            }
+        });
+
+        ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Scores");
+        query2.whereEqualTo("userId", review.getUserId());
+        query2.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject parseRev, ParseException e) {
+                if (e == null) {
+                    int newScore = parseRev.getInt("score") + val;
+                    parseRev.put("score", newScore);
+                    parseRev.saveInBackground();
+                }
+            }
+        });
     }
 
     public static void updateVoteMap(Review review, int vote) {
         //reviewsVoted.put(review.getObjectId(), )
     }
 
-    public static boolean canUpVote(Review review) {
-        if (reviewsVoted.containsKey(review.getObjectId())) {
-            int val = reviewsVoted.get(review.getObjectId());
-            if (val == -1 || val == 0) {
-                return true;
-            }
-            return false;
-        }
-        return true;
-    }
-
-    public static boolean canDownVote(Review review) {
-        if (reviewsVoted.containsKey(review.getObjectId())) {
-            int val = reviewsVoted.get(review.getObjectId());
-            if (val == 0 || val == 1) {
-                return true;
-            }
-            return false;
-        }
-        return true;
+    public static int voteLogic(Review review, int method) {
+        Integer val = reviewsVoted.get(review.getObjectId());
+       if(val == null)
+           return method;
+        else if(val  == -method)
+           return 2 * method;
+        else if(val == method)
+           return -method;
+        Log.e("Invalid state", "Method =" + method + " Curr state =" + val);
+        return 0;
     }
 
     public static interface OnRefreshCallback {
