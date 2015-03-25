@@ -24,7 +24,6 @@ import io.ohalloran.urdining.data.Review;
 public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String WHICH_KEY = "hall";
 
-
     private DiningHall which;
     private SwipeRefreshLayout refreshLayout;
 
@@ -169,13 +168,11 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    boolean update = v.getId() == R.id.vote_up ? DataUtils.upVote(data)
-                            : DataUtils.downVote(data);
-                    if (update) {
-                        scoreDisplay.setText(data.getVotes() + "");
-                        scoreDisplay.invalidate();
-                        notifyDataSetChanged();
-                    }
+                    if (v.getId() == R.id.vote_up)
+                        DataUtils.upVote(data);
+                    else
+                        DataUtils.downVote(data);
+                    scoreDisplay.setText(data.getVotes() + "");
                 }
             };
 
