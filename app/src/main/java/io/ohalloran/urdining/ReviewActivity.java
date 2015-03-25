@@ -13,6 +13,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.ohalloran.urdining.data.DataUtils;
 import io.ohalloran.urdining.data.DiningHall;
 import io.ohalloran.urdining.data.ReviewFragAdapter;
 
@@ -69,8 +70,24 @@ public class ReviewActivity extends Activity implements View.OnClickListener {
     }
 
     @Override
+    protected void onPause() {
+        DataUtils.writeToFile(getApplicationContext());
+        super.onPause();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        saveState(outState);
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
+        saveState(outState);
+    }
+
+    private void saveState(Bundle outState) {
         for (ReviewList f : fragAdapter) {
             getFragmentManager().putFragment(outState, f.which().toString(), f);
         }
