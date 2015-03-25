@@ -1,7 +1,6 @@
 package io.ohalloran.urdining.data;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 import android.widget.BaseAdapter;
 
@@ -44,23 +43,22 @@ public class DataUtils {
 
     private static List<BaseAdapter> dataChangeListener = new ArrayList<>();
 
-    public static void initialize(Context c, OnRefreshCallback callback) {
+
+    public static void initialize(final Context c, OnRefreshCallback callback) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                loadFile(c);
+            }
+        }).start();
         Parse.initialize(c, c.getString(R.string.app_id), c.getString(R.string.client_key));
         refreshReviews(callback);
-        new Thread() {
-            public void run() {
-                reviewsVoted = loadFileInBackground();
-            }
-        }.start();
     }
 
-    public static Map<String, Integer> loadFileInBackground() {
-        File ex = Environment.getDataDirectory();
+    public static void loadFile(Context context) {
+        File ex = context.getFilesDir();
         File file = new File(ex, fileName);
-
-
-        Map<String, Integer> reviewsVoted = new ConcurrentHashMap<>();
-
+        final Map<String, Integer> reviewsVoted = new ConcurrentHashMap<>();
         try {
             if (!file.exists())
                 file.createNewFile();
@@ -74,15 +72,14 @@ public class DataUtils {
             }
             br.close();
         } catch (IOException e) {
-            //Error.
             Log.e("DataUtils", "Error loading file", e);
         }
 
-        return reviewsVoted;
+        DataUtils.reviewsVoted = reviewsVoted;
     }
 
-    public static void writeToFile() {
-        File ex = Environment.getDataDirectory();
+    public static void writeToFile(Context context) {
+        File ex = context.getFilesDir();
         File file = new File(ex, fileName);
 
         try {
@@ -91,7 +88,7 @@ public class DataUtils {
 
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             Set<Map.Entry<String, Integer>> set = reviewsVoted.entrySet();
-            
+
             for (Map.Entry<String, Integer> entry : set) {
                 writer.write(entry.getKey() + " " + entry.getValue().toString());
                 writer.newLine();
@@ -194,7 +191,7 @@ public class DataUtils {
         }
     }
 
-    //Submits a review to the cloud
+    //Submits a review to the server
     public static void sendReview(Review review) {
         String textReview = review.getTextReview();
         float startsReview = review.getStartsReview();
@@ -237,13 +234,17 @@ public class DataUtils {
     }
 
     private static void vote(Review review, int method) {
+        int delta = voteLogic(review, method);
+        final int newVote = delta + review.getVotes();
+        reviewsVoted.remove(review.getObjectId());
+        reviewsVoted.put(review.getObjectId(), method); //update the vote in-memory
+        review.setVotes(newVote);
+
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Reviews");
-        final int val = voteLogic(review, method);
         query.getInBackground(review.getObjectId(), new GetCallback<ParseObject>() {
             public void done(ParseObject parseRev, ParseException e) {
                 if (e == null) {
-                    int newScore = parseRev.getInt("score") + val;
-                    parseRev.put("score", newScore);
+                    parseRev.put("score", newVote);
                     parseRev.saveInBackground();
                 }
             }
@@ -254,27 +255,22 @@ public class DataUtils {
         query2.getFirstInBackground(new GetCallback<ParseObject>() {
             public void done(ParseObject parseRev, ParseException e) {
                 if (e == null) {
-                    int newScore = parseRev.getInt("score") + val;
-                    parseRev.put("score", newScore);
+                    parseRev.put("score", newVote);
                     parseRev.saveInBackground();
                 }
             }
         });
     }
 
-    public static void updateVoteMap(Review review, int vote) {
-        //reviewsVoted.put(review.getObjectId(), )
-    }
-
     public static int voteLogic(Review review, int method) {
         Integer val = reviewsVoted.get(review.getObjectId());
-       if(val == null)
-           return method;
-        else if(val  == -method)
-           return 2 * method;
-        else if(val == method)
-           return -method;
-        Log.e("Invalid state", "Method =" + method + " Curr state =" + val);
+        if (val == null) //no old vote
+            return method;
+        else if (val == -method) //switch up <-> down
+            return 2 * method;
+        else if (val == method) //going to neutral -- undo the vote
+            return -method;
+        Log.e("Invalid state", "Method = " + method + " Curr state = " + val);
         return 0;
     }
 

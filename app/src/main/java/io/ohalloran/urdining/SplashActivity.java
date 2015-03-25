@@ -3,7 +3,6 @@ package io.ohalloran.urdining;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.RatingBar;
 
@@ -20,14 +19,14 @@ public class SplashActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        DataUtils.initialize(this, new DataUtils.OnRefreshCallback(){
+        DataUtils.initialize(getApplicationContext(), new DataUtils.OnRefreshCallback() {
             @Override
             public void onRefreshComplete() {
                 float danforthAvg = getAvgRating(DiningHall.DANFORTH);
                 float douglassAvg = getAvgRating(DiningHall.DOUGLASS);
-                RatingBar dfoRating = (RatingBar)findViewById(R.id.dfo_ratting);
+                RatingBar dfoRating = (RatingBar) findViewById(R.id.dfo_ratting);
                 dfoRating.setRating(danforthAvg);
-                RatingBar douglassRating = (RatingBar)findViewById(R.id.douglass_rating);
+                RatingBar douglassRating = (RatingBar) findViewById(R.id.douglass_rating);
                 douglassRating.setRating(douglassAvg);
             }
         });
