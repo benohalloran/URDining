@@ -90,7 +90,7 @@ public class DataUtils {
             Set<Map.Entry<String, Integer>> set = reviewsVoted.entrySet();
 
             for (Map.Entry<String, Integer> entry : set) {
-                writer.write(entry.getKey() + " " + entry.getValue().toString());
+                writer.write(entry.getKey() + "," + entry.getValue().toString());
                 writer.newLine();
             }
             writer.close();
@@ -223,17 +223,16 @@ public class DataUtils {
         }
     }
 
-    public static boolean upVote(Review review) {
-        vote(review, 1);
-        return true;
+    public static Integer upVote(Review review) {
+        return vote(review, 1);
     }
 
-    public static boolean downVote(Review review) {
-        vote(review, -1);
-        return true;
+    public static Integer downVote(Review review) {
+        return vote(review, -1);
     }
 
-    private static void vote(Review review, int method) {
+    private static Integer vote(Review review, int method) {
+        Integer i = reviewsVoted.get(review.getObjectId());
         int delta = voteLogic(review, method);
         final int newVote = delta + review.getVotes();
         reviewsVoted.remove(review.getObjectId());
@@ -260,6 +259,7 @@ public class DataUtils {
                 }
             }
         });
+        return i;
     }
 
     public static int voteLogic(Review review, int method) {
