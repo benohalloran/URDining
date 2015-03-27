@@ -43,6 +43,7 @@
             android:src="@drawable/ic_arrow_up_black_48dp"
             android:id="@+id/vote_up"
             android:layout_weight="1"
+            android:alpha=".5"
             android:gravity="center"
             android:layout_gravity="center" />
 
@@ -57,6 +58,7 @@
 
         <ImageView
             android:layout_width="fill_parent"
+            android:alpha=".5"
             android:layout_height="fill_parent"
             android:src="@drawable/ic_arrow_down_black_48dp"
             android:id="@+id/vote_down"

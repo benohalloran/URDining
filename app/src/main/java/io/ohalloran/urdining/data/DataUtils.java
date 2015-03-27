@@ -41,6 +41,9 @@ public class DataUtils {
     private static final String fileName = "fileName.txt";
     private static Map<String, Integer> reviewsVoted;
 
+    public static final int UP = 1;
+    public static final int DOWN = -1;
+
     private static List<BaseAdapter> dataChangeListener = new ArrayList<>();
 
 
@@ -224,19 +227,22 @@ public class DataUtils {
     }
 
     public static Integer upVote(Review review) {
-        return vote(review, 1);
+        return vote(review, UP);
     }
 
     public static Integer downVote(Review review) {
-        return vote(review, -1);
+        return vote(review, DOWN);
     }
 
     private static Integer vote(Review review, int method) {
         Integer i = reviewsVoted.get(review.getObjectId());
         int delta = voteLogic(review, method);
         final int newVote = delta + review.getVotes();
-        reviewsVoted.remove(review.getObjectId());
-        reviewsVoted.put(review.getObjectId(), method); //update the vote in-memory
+        //update the vote in-memory
+        if (method == -delta)
+            reviewsVoted.remove(review.getObjectId());
+        else
+            reviewsVoted.put(review.getObjectId(), method);
         review.setVotes(newVote);
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Reviews");
@@ -260,6 +266,10 @@ public class DataUtils {
             }
         });
         return i;
+    }
+
+    public static Integer getVote(Review r) {
+        return reviewsVoted.get(r.getObjectId());
     }
 
     public static int voteLogic(Review review, int method) {

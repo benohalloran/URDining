@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -159,6 +160,17 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
 
             final Review data = getItem(position);
 
+            final ImageView upArrow = (ImageView) root.findViewById(R.id.vote_up);
+            final ImageView downArrow = (ImageView) root.findViewById(R.id.vote_down);
+
+            //update the up/down arrow
+            Integer oldVote = DataUtils.getVote(data);
+            if (oldVote != null)
+                if (oldVote == DataUtils.UP)
+                    upArrow.setAlpha(1f);
+                else if (oldVote == DataUtils.DOWN)
+                    downArrow.setAlpha(1f);
+
             textReview.setText(data.getTextReview());
             ratingBar.setRating(data.getStartsReview());
             scoreDisplay.setText(data.getVotes() + "");
@@ -168,17 +180,47 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (v.getId() == R.id.vote_up)
-                        DataUtils.upVote(data);
-                    else
-                        DataUtils.downVote(data);
+                    float upAlpha = .5f, downAlpha = .5f;
+                    Integer i;
+                    int flip;
+                    if (v.getId() == R.id.vote_up) {
+                        i = DataUtils.upVote(data);
+                        flip = 1;
+                    } else {
+                        i = DataUtils.downVote(data);
+                        flip = -1;
+                    }
+
+                    if (i == null) {
+                        //no old vote, switch other
+                        if (flip == 1)
+                            upAlpha = 1f;
+                        else
+                            downAlpha = 1f;
+                    } else if (i == flip) {
+                        //both to neutral
+                        upAlpha = .5f;
+                        downAlpha = .5f;
+                    } else {
+                        //votes switched
+                        if (flip == 1) {
+                            downAlpha = .5f;
+                            upAlpha = 1f;
+                        } else {
+                            upAlpha = .5f;
+                            downAlpha = 1f;
+                        }
+                    }
+
+                    upArrow.setAlpha(upAlpha);
+                    downArrow.setAlpha(downAlpha);
                     scoreDisplay.setText(data.getVotes() + "");
                 }
             };
 
             //up-down votes
-            root.findViewById(R.id.vote_up).setOnClickListener(listener);
-            root.findViewById(R.id.vote_down).setOnClickListener(listener);
+            upArrow.setOnClickListener(listener);
+            downArrow.setOnClickListener(listener);
             return root;
         }
 
