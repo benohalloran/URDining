@@ -43,9 +43,9 @@ public class ReviewActivity extends ActionBarActivity implements View.OnClickLis
         } else {
             //reload saved states
             for (DiningHall hall : DiningHall.values()) {
-                Fragment f = getFragmentManager().getFragment(savedInstanceState,
+                ReviewList f = (ReviewList)getFragmentManager().getFragment(savedInstanceState,
                         hall.toString());
-                frags.add((ReviewList) f);
+                frags.add(f);
             }
         }
         pager.setAdapter(fragAdapter = new ReviewFragAdapter(getFragmentManager(), frags));
@@ -89,7 +89,8 @@ public class ReviewActivity extends ActionBarActivity implements View.OnClickLis
 
     private void saveState(Bundle outState) {
         for (ReviewList f : fragAdapter) {
-            getFragmentManager().putFragment(outState, f.which().toString(), f);
+            String key = f.which().toString();
+            getFragmentManager().putFragment(outState, key, f);
         }
     }
 

@@ -24,8 +24,10 @@ import io.ohalloran.urdining.data.Review;
  */
 public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRefreshListener {
     private static final String WHICH_KEY = "hall";
+    private static final String MODE_KEY = "hall_mode";
 
     private DiningHall which;
+    private Mode mode = Mode.RECENT;
     private SwipeRefreshLayout refreshLayout;
 
     public static ReviewList newInstance(DiningHall which) {
@@ -40,6 +42,8 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
     public void setArguments(Bundle args) {
         super.setArguments(args);
         which = DiningHall.getEnum(getArguments().getString(WHICH_KEY));
+        Mode m = Mode.valueOf(getArguments().getString(MODE_KEY, Mode.RECENT.toString()));
+        updateMode(m);
     }
 
     @Override
@@ -57,6 +61,7 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putString(MODE_KEY, mode.toString());
         outState.putString(WHICH_KEY, which.toString());
     }
 
@@ -66,8 +71,9 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
         ReviewAdapter ra = new ReviewAdapter();
         setListAdapter(ra);
         DataUtils.addBaseAdapter(ra);
-        if (which == null && savedInstanceState != null) {
+        if (savedInstanceState != null) {
             which = DiningHall.valueOf(savedInstanceState.getString(WHICH_KEY));
+            updateMode(Mode.valueOf(savedInstanceState.getString(MODE_KEY, Mode.RECENT.toString())));
         }
     }
 
@@ -93,7 +99,11 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
     }
 
     public void updateMode(Mode mode) {
-        getListAdapter().updateMode(mode);
+        if(this.mode != mode){
+            this.mode = mode;
+            if (getListAdapter() != null)
+                getListAdapter().notifyDataSetChanged();
+        }
     }
 
     public static enum Mode {
@@ -109,18 +119,7 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
             }
         };
 
-
-        Mode mode = Mode.RECENT;
         List<Review> reviews = DataUtils.getReviews(which);
-
-
-        public void updateMode(Mode m) {
-            if (mode == m)
-                return;
-            mode = m;
-            fetchReviews();
-            notifyDataSetChanged();
-        }
 
         void fetchReviews() {
             switch (mode) {
