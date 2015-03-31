@@ -74,6 +74,9 @@ public class ReviewList extends ListFragment implements SwipeRefreshLayout.OnRef
         if (savedInstanceState != null) {
             which = DiningHall.valueOf(savedInstanceState.getString(WHICH_KEY));
             updateMode(Mode.valueOf(savedInstanceState.getString(MODE_KEY, Mode.RECENT.toString())));
+            if(getListAdapter() != null) {
+                getListAdapter().notifyDataSetChanged();
+            }
         }
     }
 
