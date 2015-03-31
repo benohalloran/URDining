@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppBase" parent="android:Theme.Material.Light">
+    <!--<style name="AppBase" parent="android:Theme.Material.Light">
         <item name="android:colorPrimary">@color/blue</item>
         <item name="android:colorPrimaryDark">@color/navy</item>
-    </style>
+    </style>-->
 
 
 </resources>

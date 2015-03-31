@@ -18,7 +18,7 @@ import io.ohalloran.urdining.data.DiningHall;
 import io.ohalloran.urdining.data.Review;
 
 
-public class WriteActivity extends ActionBarActivity {
+public class WriteActivity extends ActionBarActivity{
 
     private EditText textReviewEditText;
     private RadioGroup hallRadio;
