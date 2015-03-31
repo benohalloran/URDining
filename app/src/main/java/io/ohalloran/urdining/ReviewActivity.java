@@ -1,11 +1,11 @@
 package io.ohalloran.urdining;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +19,7 @@ import io.ohalloran.urdining.data.ReviewFragAdapter;
 
 import static io.ohalloran.urdining.ReviewList.Mode;
 
-public class ReviewActivity extends Activity implements View.OnClickListener {
+public class ReviewActivity extends ActionBarActivity implements View.OnClickListener {
     public static final String KEY = "clicked";
 
     private ViewPager pager;

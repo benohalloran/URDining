@@ -4,8 +4,6 @@
     <style name="AppBase" parent="android:Theme.Material.Light">
         <item name="android:colorPrimary">@color/blue</item>
         <item name="android:colorPrimaryDark">@color/navy</item>
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColor">@color/black</item>
     </style>
 
 

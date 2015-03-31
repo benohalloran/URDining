@@ -1,8 +1,8 @@
 package io.ohalloran.urdining;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +18,7 @@ import io.ohalloran.urdining.data.DiningHall;
 import io.ohalloran.urdining.data.Review;
 
 
-public class WriteActivity extends Activity {
+public class WriteActivity extends ActionBarActivity {
 
     private EditText textReviewEditText;
     private RadioGroup hallRadio;

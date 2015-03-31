@@ -1,8 +1,8 @@
 package io.ohalloran.urdining;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.RatingBar;
 
@@ -13,7 +13,7 @@ import io.ohalloran.urdining.data.DiningHall;
 import io.ohalloran.urdining.data.Review;
 
 
-public class SplashActivity extends Activity implements View.OnClickListener {
+public class SplashActivity extends ActionBarActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

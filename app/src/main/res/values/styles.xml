@@ -2,11 +2,15 @@
 
     <!-- Base application theme. -->
     <style name="AppBase" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryDark">@color/navy</item>
 
     </style>
 
     <!-- Not platform specific-->
     <style name="AppTheme" parent="AppBase">
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColor">@color/black</item>
         <item name="android:numStars">5</item>
         <item name="android:max">5</item>
         <item name="android:stepSize">.5</item>
